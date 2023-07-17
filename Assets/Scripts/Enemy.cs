@@ -4,27 +4,28 @@ using UnityEngine;
 
 public abstract class Enemy : MonoBehaviour
 {
-    public float radius;
-    [Range(0, 360)]
-    public float angle;
-    public LayerMask targetMask;
-    public LayerMask obstructionMask;
-    
-    // ENCAPSULATION
-    public bool playerHit {get; private set;}
     bool isDisabled = false;
-    
+    float radius = 4.7f;
+    [Range(0, 360)]
+    float angle = 48f;
+    float velocity = 120f;
+    float disabledTime = 2;    
+    List<Material> materialList = new List<Material>(1);
+    [SerializeField]
+    LayerMask targetMask;
+    [SerializeField]
+    LayerMask obstructionMask;   
+    public bool playerHit;
+    public Rigidbody enemyRigidbody;
+    public Material[] enemyMaterials;
+    public MeshRenderer currentMaterial;    
+
     void Start()
     {
-        StartCoroutine(PointOfViewRoutine());
+        enemyRigidbody = GetComponent<Rigidbody>();
+        enemyMaterials = GetComponent<Renderer>().materials;
+        currentMaterial = GetComponent<MeshRenderer>();
     }
-    // POLYMORPHISM
-    public virtual void Attack(){
-        playerHit = true;
-        isDisabled = true;
-        StartCoroutine(DisableEnemy());
-    }
-    
     void PointOfView()
     {
         Collider[] rangeChecks = Physics.OverlapSphere(transform.position, radius, targetMask);
@@ -48,14 +49,28 @@ public abstract class Enemy : MonoBehaviour
 
     void moveTo(Vector3 position)
     {   
-        // This value will be adapted
-        if (Vector3.Distance(transform.position, position) < 2f)
-        {
-            Attack();
-        }
+        Vector3 playerDirection = (position - transform.position).normalized;
+        
+        enemyRigidbody.AddForce(playerDirection * velocity, ForceMode.Impulse);
+        
+        StartCoroutine(DisableEnemyRoutine());
     }
-
-    IEnumerator PointOfViewRoutine()
+    void DisableEnemy()
+    {
+        StopCoroutine(PointOfViewRoutine());
+        isDisabled = true;        
+        materialList.Add(enemyMaterials[1]);        
+        currentMaterial.SetMaterials(materialList);
+    }
+    void EnableEnemy()
+    {
+        isDisabled = false;
+        materialList[0] = enemyMaterials[0];
+        currentMaterial.SetMaterials(materialList);
+        materialList.Clear();
+        StartCoroutine(PointOfViewRoutine());
+    }
+    public IEnumerator PointOfViewRoutine()
     {
         while (!isDisabled)
         {
@@ -63,10 +78,21 @@ public abstract class Enemy : MonoBehaviour
             PointOfView();
         }
     }
-    IEnumerator DisableEnemy()
+    IEnumerator DisableEnemyRoutine()
+    {   
+        DisableEnemy();
+        
+        yield return new WaitForSeconds(disabledTime);
+
+        EnableEnemy();
+    }
+
+    void OnCollisionEnter(Collision col)
     {
-        playerHit = false;
-        yield return new WaitForSeconds(2);
-        isDisabled = false;
+        if (col.gameObject.name == "Player")
+        {
+            // Could be set to false after in the game manager
+            playerHit = true;
+        }
     }
 }
