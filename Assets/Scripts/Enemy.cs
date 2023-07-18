@@ -5,9 +5,11 @@ using UnityEngine;
 public abstract class Enemy : MonoBehaviour
 {
     bool isDisabled = false;
-    float radius = 4.7f;
+    protected float radius;
     [Range(0, 360)]
-    float angle = 48f;
+    protected float angle;
+    public abstract float Radius{ get; set; }
+    public abstract float Angle{ get; set; }
     float disabledTime = 2;    
     List<Material> materialList = new List<Material>(1);
     [SerializeField]
