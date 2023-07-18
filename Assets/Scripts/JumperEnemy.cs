@@ -2,14 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// INHERITANCE
-public class CylinderEnemy : Enemy
-{ 
-    float velocity = 120f;
+public class JumperEnemy : Enemy
+{
+    float jumpForce = 5000f;
+    float velocity = 100f;
     Rigidbody enemyRigidbody;
-    // POLYMORPHISM
     public override float Radius 
-    {   // ENCAPSULATION
+    { 
         get { return radius; }
         set { radius = value; } 
     }
@@ -20,16 +19,17 @@ public class CylinderEnemy : Enemy
     }
     void Start()
     {
-        enemyRigidbody = GetComponent<Rigidbody>();
         StartCoroutine(PointOfViewRoutine());
+        enemyRigidbody = GetComponent<Rigidbody>();
         
-        Radius = 4.7f;
-        Angle = 48f;
+        Radius = 8f;
+        Angle = 160f;
     }
     public override void moveTo(Vector3 position)
     {
         Vector3 playerDirection = (position - transform.position).normalized;
         
+        enemyRigidbody.AddForce(Vector3.up * jumpForce);
         enemyRigidbody.AddForce(playerDirection * velocity, ForceMode.Impulse);
     }
 }

@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour
 {
     bool gameOver = false;
     public GameObject player;
-    public GameObject[] enemies = new GameObject[1];
+    public GameObject[] enemies = new GameObject[2];
     void Update()
     {
         if (!gameOver)
@@ -41,6 +41,7 @@ public class GameManager : MonoBehaviour
             bool playerHit = enemies[i].GetComponent<Enemy>().playerHit;
             if(playerHit)
             {
+                // ABSTRACTION
                 player.GetComponent<Player>().decreaseHp();
                 enemies[i].GetComponent<Enemy>().resetPlayerHitState();
             }
