@@ -8,7 +8,6 @@ public abstract class Enemy : MonoBehaviour
     float radius = 4.7f;
     [Range(0, 360)]
     float angle = 48f;
-    float velocity = 120f;
     float disabledTime = 2;    
     List<Material> materialList = new List<Material>(1);
     [SerializeField]
@@ -16,13 +15,10 @@ public abstract class Enemy : MonoBehaviour
     [SerializeField]
     LayerMask obstructionMask;   
     public bool playerHit {get; private set;}
-    public Rigidbody enemyRigidbody;
-    public Material[] enemyMaterials;
-    public MeshRenderer currentMaterial;    
-
+    public Material[] enemyMaterials = new Material[2];
+    public MeshRenderer currentMaterial;
     void Start()
     {
-        enemyRigidbody = GetComponent<Rigidbody>();
         enemyMaterials = GetComponent<Renderer>().materials;
         currentMaterial = GetComponent<MeshRenderer>();
     }
@@ -42,17 +38,10 @@ public abstract class Enemy : MonoBehaviour
                 if (!Physics.Raycast(transform.position, directionToTarget, distanceToTarget, obstructionMask))
                 {
                     moveTo(target.position);
+                    StartCoroutine(ResetEnemyRoutine());
                 }
             }
         }
-    }
-    void moveTo(Vector3 position)
-    {   
-        Vector3 playerDirection = (position - transform.position).normalized;
-        
-        enemyRigidbody.AddForce(playerDirection * velocity, ForceMode.Impulse);
-        
-        StartCoroutine(DisableEnemyRoutine());
     }
     void DisableEnemy()
     {
@@ -69,19 +58,7 @@ public abstract class Enemy : MonoBehaviour
         materialList.Clear();
         StartCoroutine(PointOfViewRoutine());
     }
-    public IEnumerator PointOfViewRoutine()
-    {
-        while (!isDisabled)
-        {
-            yield return new WaitForSeconds(0.2f);
-            PointOfView();
-        }
-    }
-    public void resetPlayerHitState()
-    {
-        playerHit = false;
-    }
-    IEnumerator DisableEnemyRoutine()
+    IEnumerator ResetEnemyRoutine()
     {   
         DisableEnemy();
         
@@ -95,5 +72,18 @@ public abstract class Enemy : MonoBehaviour
         {
             playerHit = true;
         }
+    }
+    public IEnumerator PointOfViewRoutine()
+    {
+        while (!isDisabled)
+        {
+            yield return new WaitForSeconds(0.2f);
+            PointOfView();
+        }
+    }
+    public virtual void moveTo(Vector3 position) {}
+    public void resetPlayerHitState()
+    {
+        playerHit = false;
     }
 }
