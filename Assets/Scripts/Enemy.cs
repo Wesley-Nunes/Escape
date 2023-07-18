@@ -15,7 +15,7 @@ public abstract class Enemy : MonoBehaviour
     LayerMask targetMask;
     [SerializeField]
     LayerMask obstructionMask;   
-    public bool playerHit;
+    public bool playerHit {get; private set;}
     public Rigidbody enemyRigidbody;
     public Material[] enemyMaterials;
     public MeshRenderer currentMaterial;    
@@ -46,7 +46,6 @@ public abstract class Enemy : MonoBehaviour
             }
         }
     }
-
     void moveTo(Vector3 position)
     {   
         Vector3 playerDirection = (position - transform.position).normalized;
@@ -78,6 +77,10 @@ public abstract class Enemy : MonoBehaviour
             PointOfView();
         }
     }
+    public void resetPlayerHitState()
+    {
+        playerHit = false;
+    }
     IEnumerator DisableEnemyRoutine()
     {   
         DisableEnemy();
@@ -86,12 +89,10 @@ public abstract class Enemy : MonoBehaviour
 
         EnableEnemy();
     }
-
     void OnCollisionEnter(Collision col)
     {
         if (col.gameObject.name == "Player")
         {
-            // Could be set to false after in the game manager
             playerHit = true;
         }
     }
