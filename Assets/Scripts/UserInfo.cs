@@ -44,7 +44,7 @@ public class UserInfo : MonoBehaviour
             List<Scores> newScoresToSave = new List<Scores>(3);            
             newScoresToSave.Add(newScoreToAdd);
 
-            if (scores.Capacity > 0)
+            if (scores != null && scores.Capacity > 0)
             {
                 newScoresToSave.AddRange(scores);
             }
