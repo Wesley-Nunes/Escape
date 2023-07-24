@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 364635642811636180}
   m_Layer: 0
   m_Name: Jumper Enemy
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
