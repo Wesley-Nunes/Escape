@@ -20,4 +20,12 @@ public class Player : MonoBehaviour
     {
         hp--;
     }
+
+    public void increaseHp()
+    {
+        if (hp < 3)
+        {
+            hp++;            
+        }
+    }
 }
